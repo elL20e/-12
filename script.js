@@ -270,17 +270,26 @@ function checkAnswer(index) {
     choicesEl.forEach(btn => btn.disabled = true);
 }
 
-function nextQuestion() {
-    currentQuestion++;
-    if (currentQuestion < allQuestions.length) {
-        loadQuestion();
-    } else {
-        scoreEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
-        choicesEl.forEach(btn => btn.style.display = "none");
-        nextBtn.style.display = "none";
-        if (currentUnit < units.length - 1) skipBtn.style.display = "inline-block";
+function loadQuestion() {
+    const q = allQuestions[currentQuestion];
+    questionEl.textContent = q ? `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}` : "لا توجد أسئلة بعد";
+    
+    const choicesContainer = document.getElementById("choicesContainer");
+    choicesContainer.innerHTML = ""; // مسح الخيارات القديمة
+    
+    if (q) {
+        q.choices.forEach((choiceText, index) => {
+            const btn = document.createElement("button");
+            btn.textContent = choiceText;
+            btn.className = "choice";
+            btn.onclick = () => checkAnswer(index);
+            choicesContainer.appendChild(btn);
+        });
     }
+
+    scoreEl.textContent = "";
 }
+
 
 function skipUnit() {
     currentUnit++;
@@ -318,3 +327,4 @@ function startUnit(unitNumber) {
         if (unitNumber === 5) document.getElementById("skipToUnit5").style.display = "none";
     }
 }
+
