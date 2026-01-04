@@ -71,8 +71,6 @@ const unit3Questions = [
     { question: "من أهم فوائد القراءة التمهيدية إعطاء فكرة عامة وموجزة عن موضوع الكتاب", choices: ["صح", "خطأ"], correct: 0 },
     { question: "في خطوة 'استطلع'، يجب قراءة النص كلمة بكلمة بتركيز شديد", choices: ["صح", "خطأ"], correct: 1 }
 ];
-
-// ======= الوحدة الرابعة: تخطيط الموضوع وتنظيم الأفكار =======
 const unit4Questions = [
     // أسئلة اختيار من متعدد
     {
@@ -229,12 +227,8 @@ const units = [
     { name: "الوحدة الخامسة", questions: unit5Questions }
 ];
 
-// ضع هنا كل الأسئلة لكل وحدة كما عندك في الكود السابق (unit2Questions, unit3Questions...) 
-// لاحظت أنك أرسلتها كاملة، فقط تأكد أنها موجودة قبل الكود التالي
-
 let currentUnit = 0;
 let allQuestions = [...units[currentUnit].questions];
-shuffleQuestions(allQuestions);
 let currentQuestion = 0;
 let score = 0;
 
@@ -244,86 +238,78 @@ const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("nextBtn");
 const skipBtn = document.getElementById("skipBtn");
 
-// ======= تحميل السؤال =======
-function loadQuestion() {
-    const q = allQuestions[currentQuestion];
-    if (!q) {
-        questionEl.textContent = "انتهت الوحدة 🎉 درجتك: " + score + " من " + allQuestions.length;
-        choicesContainer.innerHTML = "";
-        nextBtn.style.display = "none";
-        skipBtn.style.display = "inline-block";
-        return;
-    }
-
-    questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
-    choicesContainer.innerHTML = "";
-
-    q.choices.forEach((choiceText, index) => {
-        const btn = document.createElement("button");
-        btn.textContent = choiceText;
-        btn.className = "choice";
-        btn.onclick = () => checkAnswer(index);
-        choicesContainer.appendChild(btn);
-    });
-
-    scoreEl.textContent = "";
-}
-
-// ======= التحقق من الإجابة =======
-function checkAnswer(index) {
-    const buttons = document.querySelectorAll("#choicesContainer .choice");
-    const correctIndex = allQuestions[currentQuestion].correct;
-
-    if (index === correctIndex) {
-        buttons[index].classList.add("correct");
-        score++;
-    } else {
-        buttons[index].classList.add("wrong");
-        buttons[correctIndex].classList.add("correct");
-    }
-
-    buttons.forEach(btn => btn.disabled = true);
-}
-
-// ======= الانتقال للسؤال التالي =======
-nextBtn.addEventListener("click", () => {
-    currentQuestion++;
-    if (currentQuestion >= allQuestions.length) {
-        questionEl.textContent = "انتهت الوحدة 🎉 درجتك: " + score + " من " + allQuestions.length;
-        choicesContainer.innerHTML = "";
-        nextBtn.style.display = "none";
-        skipBtn.style.display = "inline-block";
-    } else {
-        loadQuestion();
-    }
-});
-
-// ======= تخطي الوحدة =======
-skipBtn.addEventListener("click", () => {
-    currentUnit++;
-    if (currentUnit < units.length) {
-        allQuestions = [...units[currentUnit].questions];
-        shuffleQuestions(allQuestions);
-        currentQuestion = 0;
-        score = 0;
-        nextBtn.style.display = "inline-block";
-        skipBtn.style.display = "none";
-        loadQuestion();
-    } else {
-        questionEl.textContent = "انتهت جميع الوحدات 🎉";
-        choicesContainer.innerHTML = "";
-        nextBtn.style.display = "none";
-        skipBtn.style.display = "none";
-    }
-});
-
-// ======= خلط الأسئلة =======
+// ======= وظائف السكربت =======
 function shuffleQuestions(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
-// ======= بدء الاختبار =======
+function loadQuestion() {
+  const q = allQuestions[currentQuestion];
+  if (!q) {
+      questionEl.textContent = "لا توجد أسئلة بعد";
+      choicesContainer.innerHTML = "";
+      return;
+  }
+
+  questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
+  choicesContainer.innerHTML = "";
+
+  q.choices.forEach((choiceText, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = choiceText;
+      btn.className = "choice";
+      btn.onclick = () => checkAnswer(index);
+      choicesContainer.appendChild(btn);
+  });
+
+  scoreEl.textContent = "";
+}
+
+function checkAnswer(index) {
+  const q = allQuestions[currentQuestion];
+  if (!q) return;
+  const correctIndex = q.correct;
+  const buttons = choicesContainer.querySelectorAll(".choice");
+
+  if (index === correctIndex) {
+      buttons[index].classList.add("correct");
+      score++;
+  } else {
+      buttons[index].classList.add("wrong");
+      if (buttons[correctIndex]) buttons[correctIndex].classList.add("correct");
+  }
+
+  buttons.forEach(btn => btn.disabled = true);
+}
+
+nextBtn.addEventListener("click", () => {
+  currentQuestion++;
+  if (currentQuestion < allQuestions.length) {
+      loadQuestion();
+  } else {
+      scoreEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
+      choicesContainer.innerHTML = "";
+  }
+});
+
+skipBtn.addEventListener("click", () => {
+  currentUnit++;
+  if (currentUnit < units.length) {
+      allQuestions = [...units[currentUnit].questions];
+      shuffleQuestions(allQuestions);
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+  } else {
+      questionEl.textContent = "انتهت جميع الوحدات 🎉";
+      choicesContainer.innerHTML = "";
+      skipBtn.style.display = "none";
+  }
+});
+
+// ======= شغل أول سؤال =======
+shuffleQuestions(allQuestions);
 loadQuestion();
