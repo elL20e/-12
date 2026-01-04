@@ -221,7 +221,7 @@ const unit5Questions = [
 
 // ==================== إدارة الاختبار ====================
 
-// ======= إدارة الوحدات بدون أسئلة =======
+// ======= جميع الوحدات والأسئلة =======
 const units = [
     { name: "الوحدة الثانية", questions: unit2Questions },
     { name: "الوحدة الثالثة", questions: unit3Questions },
@@ -229,7 +229,8 @@ const units = [
     { name: "الوحدة الخامسة", questions: unit5Questions }
 ];
 
-
+// ضع هنا كل الأسئلة لكل وحدة كما عندك في الكود السابق (unit2Questions, unit3Questions...) 
+// لاحظت أنك أرسلتها كاملة، فقط تأكد أنها موجودة قبل الكود التالي
 
 let currentUnit = 0;
 let allQuestions = [...units[currentUnit].questions];
@@ -238,76 +239,85 @@ let currentQuestion = 0;
 let score = 0;
 
 const questionEl = document.getElementById("question");
-const choicesEl = document.querySelectorAll(".choice");
+const choicesContainer = document.getElementById("choicesContainer");
 const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("nextBtn");
 const skipBtn = document.getElementById("skipBtn");
 
-loadQuestion();
-
+// ======= تحميل السؤال =======
 function loadQuestion() {
     const q = allQuestions[currentQuestion];
-    questionEl.textContent = q ? `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}` : "لا توجد أسئلة بعد";
-    choicesEl.forEach((btn, index) => {
-        btn.textContent = q && q.choices[index] ? q.choices[index] : "";
+    if (!q) {
+        questionEl.textContent = "انتهت الوحدة 🎉 درجتك: " + score + " من " + allQuestions.length;
+        choicesContainer.innerHTML = "";
+        nextBtn.style.display = "none";
+        skipBtn.style.display = "inline-block";
+        return;
+    }
+
+    questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
+    choicesContainer.innerHTML = "";
+
+    q.choices.forEach((choiceText, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = choiceText;
         btn.className = "choice";
-        btn.disabled = !q;
-        btn.style.display = q && q.choices[index] ? "inline-block" : "none";
+        btn.onclick = () => checkAnswer(index);
+        choicesContainer.appendChild(btn);
     });
+
     scoreEl.textContent = "";
 }
 
+// ======= التحقق من الإجابة =======
 function checkAnswer(index) {
-    if (!allQuestions[currentQuestion]) return;
+    const buttons = document.querySelectorAll("#choicesContainer .choice");
     const correctIndex = allQuestions[currentQuestion].correct;
+
     if (index === correctIndex) {
-        choicesEl[index].classList.add("correct");
+        buttons[index].classList.add("correct");
         score++;
     } else {
-        choicesEl[index].classList.add("wrong");
-        choicesEl[correctIndex].classList.add("correct");
-    }
-    choicesEl.forEach(btn => btn.disabled = true);
-}
-
-function loadQuestion() {
-    const q = allQuestions[currentQuestion];
-    questionEl.textContent = q ? `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}` : "لا توجد أسئلة بعد";
-    
-    const choicesContainer = document.getElementById("choicesContainer");
-    choicesContainer.innerHTML = ""; // مسح الخيارات القديمة
-    
-    if (q) {
-        q.choices.forEach((choiceText, index) => {
-            const btn = document.createElement("button");
-            btn.textContent = choiceText;
-            btn.className = "choice";
-            btn.onclick = () => checkAnswer(index);
-            choicesContainer.appendChild(btn);
-        });
+        buttons[index].classList.add("wrong");
+        buttons[correctIndex].classList.add("correct");
     }
 
-    scoreEl.textContent = "";
+    buttons.forEach(btn => btn.disabled = true);
 }
 
+// ======= الانتقال للسؤال التالي =======
+nextBtn.addEventListener("click", () => {
+    currentQuestion++;
+    if (currentQuestion >= allQuestions.length) {
+        questionEl.textContent = "انتهت الوحدة 🎉 درجتك: " + score + " من " + allQuestions.length;
+        choicesContainer.innerHTML = "";
+        nextBtn.style.display = "none";
+        skipBtn.style.display = "inline-block";
+    } else {
+        loadQuestion();
+    }
+});
 
-function skipUnit() {
+// ======= تخطي الوحدة =======
+skipBtn.addEventListener("click", () => {
     currentUnit++;
     if (currentUnit < units.length) {
         allQuestions = [...units[currentUnit].questions];
         shuffleQuestions(allQuestions);
         currentQuestion = 0;
         score = 0;
-        choicesEl.forEach(btn => btn.style.display = "inline-block");
         nextBtn.style.display = "inline-block";
         skipBtn.style.display = "none";
         loadQuestion();
     } else {
         questionEl.textContent = "انتهت جميع الوحدات 🎉";
+        choicesContainer.innerHTML = "";
+        nextBtn.style.display = "none";
+        skipBtn.style.display = "none";
     }
-}
+});
 
-// خلط الأسئلة
+// ======= خلط الأسئلة =======
 function shuffleQuestions(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -315,16 +325,5 @@ function shuffleQuestions(array) {
     }
 }
 
-function startUnit(unitNumber) {
-    if (unitNumber >= 2 && unitNumber <= 5) {
-        allQuestions = [...units[unitNumber - 2].questions];
-        shuffleQuestions(allQuestions);
-        currentQuestion = 0;
-        score = 0;
-        choicesEl.forEach(btn => btn.style.display = "inline-block");
-        loadQuestion();
-        if (unitNumber === 4) document.getElementById("skipToUnit4").style.display = "none";
-        if (unitNumber === 5) document.getElementById("skipToUnit5").style.display = "none";
-    }
-}
-
+// ======= بدء الاختبار =======
+loadQuestion();
