@@ -85,7 +85,6 @@
       margin-top: 15px;
       text-align: center;
       color: #000;
-      white-space: pre-line;
   }
 </style>
 </head>
@@ -99,132 +98,7 @@
 <button id="nextBtn">التالي</button>
 <button id="skipBtn">تخطي الوحدة</button>
 
-<script>
-  // ======= أسئلة الوحدة الثانية =======
-  const unit2Questions = [
-    { question: "علامة الترقيم المناسبة في نهاية جملة «ما أجمل الربيع»؟", choices: ["؟", ".", "!"], correct: 2 },
-    { question: "توضع الفاصلة المنقوطة (؛) بين جملتين:", choices: ["غير مترابطتين", "إحدى الجملين سبب للأخرى", "إحدى الجملين سؤال"], correct: 1 },
-    { question: "في جملة «أركان الإسلام خمسة: الشهادتان، وإقامة الصلاة…» ما العلامة بعد كلمة خمسة؟", choices: ["فاصلة (,)", "نقطة (.)", "نقطتان رأسيتان (:)"], correct: 2 },
-    { question: "ما العلامة التي توضع حول الكلام المنقول حرفيًا عن الآخرين؟", choices: ["قوسان هلاليان ()", "شرطتان --", "علامتا تنصيص \" \""], correct: 2 }
-  ];
-
-  // ======= أسئلة الوحدة الثالثة =======
-  const unit3Questions = [
-    { question: "ما هو الهدف الرئيسي من طرح سؤال 'ماذا أعرف عن الموضوع؟' قبل القراءة؟", choices: ["تنشيط المعرفة السابقة وربطها بالمعلومات الجديدة", "تخطي الأجزاء المعروفة في النص", "كتابة ملخص قبل القراءة"], correct: 0 },
-    { question: "عند قراءة رواية من أجل المتعة، أي الأسئلة التالية يكون الأقل أهمية؟", choices: ["ما الذي أحتاجه للأحداث الرئيسية؟", "أين سأجد تلخيصًا للمؤلف؟", "للاستمتاع بالقراءة"], correct: 1 }
-  ];
-
-  // ======= أسئلة الوحدة الرابعة =======
-  const unit4Questions = [
-    { question: "ما هي الخطوة الأولى عند البدء بتصميم مخطط لموضوع كتابي؟", choices: ["تحديد الأفكار الجزئية", "اقتراح أسلوب العرض", "تحديد العناصر الفنية", "شواهد الدعم"], correct: 0 },
-    { question: "عند تفصيل وشرح فكرة رئيسة باستخدام الأمثلة والشروحات، فإنك تعمل على خطوة:", choices: ["تحديد العناصر الفنية", "تحديد الأفكار الرئيسة", "تحديد الأفكار الجزئية والتفصيلات", "اقتراح أسلوب العرض"], correct: 2 },
-    { question: "في مقال عن 'أضرار التلوث'، تعتبر نقطة 'التلوث السمعي وأثره على الأعصاب' بمثابة:", choices: ["عنصر فني", "فكرة جزئية", "فكرة رئيسة"], correct: 1 }
-  ];
-
-  // ======= أسئلة الوحدة الخامسة =======
-  const unit5Questions = [
-    { question: "أي من التالي ليس من المكونات الأربعة الأساسية لعملية الاتصال اللغوي؟", choices: ["المرسل", "الرسالة", "الضوضاء", "المستقبل"], correct: 2 },
-    { question: "الاستماع إلى صديق يشاركك مشاكله بهدف مواساته، يندرج تحت أي هدف من أهداف الاستماع؟", choices: ["الاستمتاع", "المشاركة العاطفية", "الحصول على معلومات", "النقد والتحليل"], correct: 1 }
-  ];
-
-  // ======= إعداد الوحدات =======
-  const units = [
-    { name: "الوحدة الثانية", questions: unit2Questions },
-    { name: "الوحدة الثالثة", questions: unit3Questions },
-    { name: "الوحدة الرابعة", questions: unit4Questions },
-    { name: "الوحدة الخامسة", questions: unit5Questions }
-  ];
-
-  let currentUnit = 0;
-  let allQuestions = [...units[currentUnit].questions];
-  let currentQuestion = 0;
-  let score = 0;
-
-  const questionEl = document.getElementById("question");
-  const choicesContainer = document.getElementById("choicesContainer");
-  const scoreEl = document.getElementById("score");
-  const nextBtn = document.getElementById("nextBtn");
-  const skipBtn = document.getElementById("skipBtn");
-
-  function shuffleQuestions(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-      }
-  }
-
-  function loadQuestion() {
-      const q = allQuestions[currentQuestion];
-      if (!q) {
-          questionEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
-          choicesContainer.innerHTML = "";
-          nextBtn.style.display = "none";
-          skipBtn.style.display = "inline-block";
-          return;
-      }
-
-      questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
-      choicesContainer.innerHTML = "";
-
-      q.choices.forEach((choiceText, index) => {
-          const btn = document.createElement("button");
-          btn.textContent = choiceText;
-          btn.className = "choice";
-          btn.onclick = () => checkAnswer(index);
-          choicesContainer.appendChild(btn);
-      });
-
-      scoreEl.textContent = "";
-      nextBtn.style.display = "inline-block";
-      skipBtn.style.display = "inline-block";
-  }
-
-  function checkAnswer(index) {
-      const buttons = document.querySelectorAll("#choicesContainer .choice");
-      const q = allQuestions[currentQuestion];
-      const correctIndex = q.correct;
-
-      if (index === correctIndex) {
-          buttons[index].classList.add("correct");
-          score++;
-      } else {
-          buttons[index].classList.add("wrong");
-          buttons[correctIndex].classList.add("correct");
-      }
-
-      buttons.forEach(btn => btn.disabled = true);
-  }
-
-  nextBtn.addEventListener("click", () => {
-      currentQuestion++;
-      if (currentQuestion < allQuestions.length) {
-          loadQuestion();
-      } else {
-          scoreEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
-          choicesContainer.innerHTML = "";
-          nextBtn.style.display = "none";
-      }
-  });
-
-  skipBtn.addEventListener("click", () => {
-      currentUnit++;
-      if (currentUnit < units.length) {
-          allQuestions = [...units[currentUnit].questions];
-          shuffleQuestions(allQuestions);
-          currentQuestion = 0;
-          score = 0;
-          loadQuestion();
-      } else {
-          questionEl.textContent = "انتهت جميع الوحدات 🎉";
-          choicesContainer.innerHTML = "";
-          nextBtn.style.display = "none";
-          skipBtn.style.display = "none";
-      }
-  });
-
-  // بدء الاختبار
-  shuffleQuestions(allQuestions);
-  loadQuestion();
-</script>
+<!-- استدعاء السكربت الخارجي -->
+<script src="script.js"></script>
 </body>
 </html>
