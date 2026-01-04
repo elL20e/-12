@@ -6,7 +6,7 @@
 <style>
   body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f6d365, #fda085); /* خلفية حيوية */
+      background: linear-gradient(135deg, #f6d365, #fda085);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -26,7 +26,7 @@
       max-width: 800px;
   }
 
-  div {
+  #choicesContainer {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -85,6 +85,7 @@
       margin-top: 15px;
       text-align: center;
       color: #000;
+      white-space: pre-line;
   }
 </style>
 </head>
@@ -92,12 +93,7 @@
 
 <h2 id="question">تحميل السؤال...</h2>
 
-<div>
-  <button class="choice"></button>
-  <button class="choice"></button>
-  <button class="choice"></button>
-  <button class="choice"></button>
-</div>
+<div id="choicesContainer"></div>
 
 <p id="score"></p>
 <button id="nextBtn">التالي</button>
@@ -106,23 +102,29 @@
 <script>
   // ======= أسئلة الوحدة الثانية =======
   const unit2Questions = [
-    { question: "علامة الترقيم المناسبة في نهاية جملة «ما أجمل الربيع»؟", choices: ["؟", ".", "!"], correct: 0 },
-    { question: "توضع الفاصلة المنقوطة (؛) بين جملتين:", choices: ["غير مترابطتين", "إحداهما سبب للأخرى", "إحدى الجملين سؤال"], correct: 1 }
+    { question: "علامة الترقيم المناسبة في نهاية جملة «ما أجمل الربيع»؟", choices: ["؟", ".", "!"], correct: 2 },
+    { question: "توضع الفاصلة المنقوطة (؛) بين جملتين:", choices: ["غير مترابطتين", "إحدى الجملين سبب للأخرى", "إحدى الجملين سؤال"], correct: 1 },
+    { question: "في جملة «أركان الإسلام خمسة: الشهادتان، وإقامة الصلاة…» ما العلامة بعد كلمة خمسة؟", choices: ["فاصلة (,)", "نقطة (.)", "نقطتان رأسيتان (:)"], correct: 2 },
+    { question: "ما العلامة التي توضع حول الكلام المنقول حرفيًا عن الآخرين؟", choices: ["قوسان هلاليان ()", "شرطتان --", "علامتا تنصيص \" \""], correct: 2 }
   ];
 
   // ======= أسئلة الوحدة الثالثة =======
   const unit3Questions = [
-    { question: "ما هو الهدف الرئيسي من طرح سؤال 'ماذا أعرف عن الموضوع؟' قبل القراءة؟", choices: ["تنشيط المعرفة السابقة", "كتابة ملخص قبل القراءة", "تخطي الأجزاء المعروفة"], correct: 0 }
+    { question: "ما هو الهدف الرئيسي من طرح سؤال 'ماذا أعرف عن الموضوع؟' قبل القراءة؟", choices: ["تنشيط المعرفة السابقة وربطها بالمعلومات الجديدة", "تخطي الأجزاء المعروفة في النص", "كتابة ملخص قبل القراءة"], correct: 0 },
+    { question: "عند قراءة رواية من أجل المتعة، أي الأسئلة التالية يكون الأقل أهمية؟", choices: ["ما الذي أحتاجه للأحداث الرئيسية؟", "أين سأجد تلخيصًا للمؤلف؟", "للاستمتاع بالقراءة"], correct: 1 }
   ];
 
   // ======= أسئلة الوحدة الرابعة =======
   const unit4Questions = [
-    { question: "ما هي الخطوة الأولى عند البدء بتصميم مخطط لموضوع كتابي؟", choices: ["تحديد الأفكار الجزئية", "اقتراح أسلوب العرض", "تحديد العناصر الفنية"], correct: 0 }
+    { question: "ما هي الخطوة الأولى عند البدء بتصميم مخطط لموضوع كتابي؟", choices: ["تحديد الأفكار الجزئية", "اقتراح أسلوب العرض", "تحديد العناصر الفنية", "شواهد الدعم"], correct: 0 },
+    { question: "عند تفصيل وشرح فكرة رئيسة باستخدام الأمثلة والشروحات، فإنك تعمل على خطوة:", choices: ["تحديد العناصر الفنية", "تحديد الأفكار الرئيسة", "تحديد الأفكار الجزئية والتفصيلات", "اقتراح أسلوب العرض"], correct: 2 },
+    { question: "في مقال عن 'أضرار التلوث'، تعتبر نقطة 'التلوث السمعي وأثره على الأعصاب' بمثابة:", choices: ["عنصر فني", "فكرة جزئية", "فكرة رئيسة"], correct: 1 }
   ];
 
   // ======= أسئلة الوحدة الخامسة =======
   const unit5Questions = [
-    { question: "أي من التالي ليس من المكونات الأربعة الأساسية لعملية الاتصال اللغوي؟", choices: ["المرسل", "الرسالة", "الضوضاء", "المستقبل"], correct: 2 }
+    { question: "أي من التالي ليس من المكونات الأربعة الأساسية لعملية الاتصال اللغوي؟", choices: ["المرسل", "الرسالة", "الضوضاء", "المستقبل"], correct: 2 },
+    { question: "الاستماع إلى صديق يشاركك مشاكله بهدف مواساته، يندرج تحت أي هدف من أهداف الاستماع؟", choices: ["الاستمتاع", "المشاركة العاطفية", "الحصول على معلومات", "النقد والتحليل"], correct: 1 }
   ];
 
   // ======= إعداد الوحدات =======
@@ -139,7 +141,7 @@
   let score = 0;
 
   const questionEl = document.getElementById("question");
-  const choicesEl = document.querySelectorAll(".choice");
+  const choicesContainer = document.getElementById("choicesContainer");
   const scoreEl = document.getElementById("score");
   const nextBtn = document.getElementById("nextBtn");
   const skipBtn = document.getElementById("skipBtn");
@@ -154,36 +156,43 @@
   function loadQuestion() {
       const q = allQuestions[currentQuestion];
       if (!q) {
-          questionEl.textContent = "لا توجد أسئلة بعد";
-          choicesEl.forEach(btn => btn.style.display = "none");
+          questionEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
+          choicesContainer.innerHTML = "";
+          nextBtn.style.display = "none";
+          skipBtn.style.display = "inline-block";
           return;
       }
+
       questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
-      choicesEl.forEach((btn, index) => {
-          btn.textContent = q.choices[index] || "";
+      choicesContainer.innerHTML = "";
+
+      q.choices.forEach((choiceText, index) => {
+          const btn = document.createElement("button");
+          btn.textContent = choiceText;
           btn.className = "choice";
-          btn.disabled = false;
-          btn.style.display = q.choices[index] ? "inline-block" : "none";
+          btn.onclick = () => checkAnswer(index);
+          choicesContainer.appendChild(btn);
       });
+
       scoreEl.textContent = "";
+      nextBtn.style.display = "inline-block";
+      skipBtn.style.display = "inline-block";
   }
 
-  choicesEl.forEach((btn, index) => {
-      btn.addEventListener("click", () => checkAnswer(index));
-  });
-
   function checkAnswer(index) {
+      const buttons = document.querySelectorAll("#choicesContainer .choice");
       const q = allQuestions[currentQuestion];
-      if (!q) return;
       const correctIndex = q.correct;
+
       if (index === correctIndex) {
-          choicesEl[index].classList.add("correct");
+          buttons[index].classList.add("correct");
           score++;
       } else {
-          choicesEl[index].classList.add("wrong");
-          if (choicesEl[correctIndex]) choicesEl[correctIndex].classList.add("correct");
+          buttons[index].classList.add("wrong");
+          buttons[correctIndex].classList.add("correct");
       }
-      choicesEl.forEach(btn => btn.disabled = true);
+
+      buttons.forEach(btn => btn.disabled = true);
   }
 
   nextBtn.addEventListener("click", () => {
@@ -192,7 +201,8 @@
           loadQuestion();
       } else {
           scoreEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
-          choicesEl.forEach(btn => btn.style.display = "none");
+          choicesContainer.innerHTML = "";
+          nextBtn.style.display = "none";
       }
   });
 
@@ -203,19 +213,18 @@
           shuffleQuestions(allQuestions);
           currentQuestion = 0;
           score = 0;
-          choicesEl.forEach(btn => btn.style.display = "inline-block");
           loadQuestion();
       } else {
           questionEl.textContent = "انتهت جميع الوحدات 🎉";
-          choicesEl.forEach(btn => btn.style.display = "none");
+          choicesContainer.innerHTML = "";
+          nextBtn.style.display = "none";
           skipBtn.style.display = "none";
       }
   });
 
-  // شغل أول سؤال
+  // بدء الاختبار
   shuffleQuestions(allQuestions);
   loadQuestion();
-
 </script>
 </body>
 </html>
