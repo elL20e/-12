@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>اختبار الوحدات</title>
+<style>
+  body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f6d365, #fda085); /* خلفية حيوية */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: #000;
+  }
+
+  #question {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin: 30px 0;
+      text-align: center;
+      color: #1a1a1a;
+      max-width: 800px;
+  }
+
+  div {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+  }
+
+  .choice {
+      background-color: #fff;
+      border: 2px solid #ff7f50;
+      border-radius: 10px;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-size: 1.2em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+  }
+
+  .choice:hover {
+      transform: scale(1.05);
+      background-color: #ff7f50;
+      color: #fff;
+  }
+
+  .correct {
+      background-color: #4caf50 !important;
+      color: white;
+      border-color: #4caf50 !important;
+  }
+
+  .wrong {
+      background-color: #f44336 !important;
+      color: white;
+      border-color: #f44336 !important;
+  }
+
+  #nextBtn, #skipBtn {
+      background-color: #ff7f50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 25px;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+  }
+
+  #nextBtn:hover, #skipBtn:hover {
+      background-color: #ff4500;
+  }
+
+  #score {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+      color: #000;
+  }
+</style>
+</head>
+<body>
+
+<h2 id="question">تحميل السؤال...</h2>
+
+<div>
+  <button class="choice"></button>
+  <button class="choice"></button>
+  <button class="choice"></button>
+  <button class="choice"></button>
+</div>
+
+<p id="score"></p>
+<button id="nextBtn">التالي</button>
+<button id="skipBtn">تخطي الوحدة</button>
+
+<script>
+  // ======= أسئلة الوحدة الثانية =======
+  const unit2Questions = [
+    { question: "علامة الترقيم المناسبة في نهاية جملة «ما أجمل الربيع»؟", choices: ["؟", ".", "!"], correct: 0 },
+    { question: "توضع الفاصلة المنقوطة (؛) بين جملتين:", choices: ["غير مترابطتين", "إحداهما سبب للأخرى", "إحدى الجملين سؤال"], correct: 1 }
+  ];
+
+  // ======= أسئلة الوحدة الثالثة =======
+  const unit3Questions = [
+    { question: "ما هو الهدف الرئيسي من طرح سؤال 'ماذا أعرف عن الموضوع؟' قبل القراءة؟", choices: ["تنشيط المعرفة السابقة", "كتابة ملخص قبل القراءة", "تخطي الأجزاء المعروفة"], correct: 0 }
+  ];
+
+  // ======= أسئلة الوحدة الرابعة =======
+  const unit4Questions = [
+    { question: "ما هي الخطوة الأولى عند البدء بتصميم مخطط لموضوع كتابي؟", choices: ["تحديد الأفكار الجزئية", "اقتراح أسلوب العرض", "تحديد العناصر الفنية"], correct: 0 }
+  ];
+
+  // ======= أسئلة الوحدة الخامسة =======
+  const unit5Questions = [
+    { question: "أي من التالي ليس من المكونات الأربعة الأساسية لعملية الاتصال اللغوي؟", choices: ["المرسل", "الرسالة", "الضوضاء", "المستقبل"], correct: 2 }
+  ];
+
+  // ======= إعداد الوحدات =======
+  const units = [
+    { name: "الوحدة الثانية", questions: unit2Questions },
+    { name: "الوحدة الثالثة", questions: unit3Questions },
+    { name: "الوحدة الرابعة", questions: unit4Questions },
+    { name: "الوحدة الخامسة", questions: unit5Questions }
+  ];
+
+  let currentUnit = 0;
+  let allQuestions = [...units[currentUnit].questions];
+  let currentQuestion = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById("question");
+  const choicesEl = document.querySelectorAll(".choice");
+  const scoreEl = document.getElementById("score");
+  const nextBtn = document.getElementById("nextBtn");
+  const skipBtn = document.getElementById("skipBtn");
+
+  function shuffleQuestions(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+      }
+  }
+
+  function loadQuestion() {
+      const q = allQuestions[currentQuestion];
+      if (!q) {
+          questionEl.textContent = "لا توجد أسئلة بعد";
+          choicesEl.forEach(btn => btn.style.display = "none");
+          return;
+      }
+      questionEl.textContent = `${units[currentUnit].name} - سؤال ${currentQuestion + 1}: ${q.question}`;
+      choicesEl.forEach((btn, index) => {
+          btn.textContent = q.choices[index] || "";
+          btn.className = "choice";
+          btn.disabled = false;
+          btn.style.display = q.choices[index] ? "inline-block" : "none";
+      });
+      scoreEl.textContent = "";
+  }
+
+  choicesEl.forEach((btn, index) => {
+      btn.addEventListener("click", () => checkAnswer(index));
+  });
+
+  function checkAnswer(index) {
+      const q = allQuestions[currentQuestion];
+      if (!q) return;
+      const correctIndex = q.correct;
+      if (index === correctIndex) {
+          choicesEl[index].classList.add("correct");
+          score++;
+      } else {
+          choicesEl[index].classList.add("wrong");
+          if (choicesEl[correctIndex]) choicesEl[correctIndex].classList.add("correct");
+      }
+      choicesEl.forEach(btn => btn.disabled = true);
+  }
+
+  nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < allQuestions.length) {
+          loadQuestion();
+      } else {
+          scoreEl.textContent = `انتهت ${units[currentUnit].name} 🎉\nدرجتك: ${score} من ${allQuestions.length}`;
+          choicesEl.forEach(btn => btn.style.display = "none");
+      }
+  });
+
+  skipBtn.addEventListener("click", () => {
+      currentUnit++;
+      if (currentUnit < units.length) {
+          allQuestions = [...units[currentUnit].questions];
+          shuffleQuestions(allQuestions);
+          currentQuestion = 0;
+          score = 0;
+          choicesEl.forEach(btn => btn.style.display = "inline-block");
+          loadQuestion();
+      } else {
+          questionEl.textContent = "انتهت جميع الوحدات 🎉";
+          choicesEl.forEach(btn => btn.style.display = "none");
+          skipBtn.style.display = "none";
+      }
+  });
+
+  // شغل أول سؤال
+  shuffleQuestions(allQuestions);
+  loadQuestion();
+
+</script>
+</body>
+</html>
